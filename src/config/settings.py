@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     # Third-party
     'allauth',
     'allauth.account',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -135,3 +137,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 1
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
