@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+    postgres:
+        image: postgres:14-alpine
+        restart: always
+        volumes:
+            - postgres_data:/var/lib/postgresql/data/
+        env_file:
+            - "src/.env"
+    django:
+        build: .
+        command: python /code/src/manage.py runserver 0.0.0.0:8000
+        restart: always
+        volumes:
+            - .:/code
+        env_file:
+            -   "src/.env"
+        ports:
+            - "8000:8000"
+        depends_on:
+            - postgres
+
+volumes:
+    postgres_data:
