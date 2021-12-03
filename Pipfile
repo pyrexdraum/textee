@@ -12,6 +12,7 @@ django-crispy-forms = "==1.13.0"
 crispy-bootstrap5 = "==0.6"
 
 [dev-packages]
+black = "*"
 
 [requires]
 python_version = "3.9"
