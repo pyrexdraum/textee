@@ -104,7 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -140,3 +140,15 @@ SITE_ID = 1
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# django-allauth
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_USERNAME_BLACKLIST = ['admin', 'administrator', 'user', 'moderator']
+ACCOUNT_USERNAME_MIN_LENGTH = 3
