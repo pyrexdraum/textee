@@ -13,7 +13,7 @@ class MakeRandomStringTest(TestCase):
         """
         for length in range(10):
             string = make_random_string(length)
-            self.assertEqual(len(string), length)
+            self.assertEquals(len(string), length)
 
     def test_negative_integer_length(self):
         """
@@ -21,7 +21,7 @@ class MakeRandomStringTest(TestCase):
         """
         for length in range(-10, 0):
             string = make_random_string(length)
-            self.assertEqual(string, "")
+            self.assertEquals(string, "")
 
     def test_chars_argument(self):
         """
