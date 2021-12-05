@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from django.test import TestCase
+from django.utils import timezone
 
 from ..models import Snippet
 
@@ -31,3 +34,45 @@ class SnippetModelTest(TestCase):
         expected_code = "Just a code."
         snippet = Snippet.objects.create(code=expected_code)
         self.assertEquals(snippet.code, expected_code)
+
+    def test_inactive_snippets(self):
+        """
+        Менеджер inactive возвращает только сниппеты с истёкшим сроком.
+        """
+        inactive_snippets = [
+            Snippet.objects.create(expiration=timezone.now() - timedelta(seconds=1)),
+            Snippet.objects.create(expiration=timezone.now() - timedelta(days=1)),
+        ]
+        Snippet.objects.create()
+        Snippet.objects.create(expiration=timezone.now() + timedelta(days=1))
+
+        self.assertQuerysetEqual(
+            Snippet.inactive.order_by("created"), inactive_snippets
+        )
+
+    def test_active_snippets(self):
+        """
+        Менеджер active возвращает только сниппеты,
+        срок действия которых не истёк.
+        """
+        active_snippets = [
+            Snippet.objects.create(),
+            Snippet.objects.create(expiration=timezone.now() + timedelta(days=1)),
+        ]
+        Snippet.objects.create(expiration=timezone.now() - timedelta(seconds=1)),
+        Snippet.objects.create(expiration=timezone.now() - timedelta(days=1))
+
+        self.assertQuerysetEqual(Snippet.active.order_by("created"), active_snippets)
+
+    def test_objects(self):
+        """
+        Менеджер objects возвращает все сниппеты.
+        """
+        snippets = [
+            Snippet.objects.create(),
+            Snippet.objects.create(expiration=timezone.now() + timedelta(days=1)),
+            Snippet.objects.create(expiration=timezone.now() - timedelta(seconds=1)),
+            Snippet.objects.create(expiration=timezone.now() - timedelta(days=1)),
+        ]
+
+        self.assertQuerysetEqual(Snippet.objects.order_by("created"), snippets)
