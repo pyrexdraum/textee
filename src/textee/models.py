@@ -33,7 +33,9 @@ class Snippet(models.Model):
         max_length=100,
     )
     created = models.DateTimeField(verbose_name="Создан", auto_now_add=True)
-    expires = models.DateTimeField(verbose_name="Будет удалён", null=True, blank=True)
+    expiration = models.DateTimeField(
+        verbose_name="Срок действия", null=True, blank=True
+    )
     url = models.CharField(max_length=URL_LENGTH, unique=True, editable=False)
 
     class Meta:
