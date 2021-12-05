@@ -3,12 +3,25 @@ from pygments.lexers import get_all_lexers
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils import timezone
 
 from .utils import make_random_string
 
 User = get_user_model()
 LEXERS = [item for item in get_all_lexers() if item[1]]
 SYNTAX_CHOICES = [("none", "Нет")] + sorted([(item[1][0], item[0]) for item in LEXERS])
+
+
+class InactiveSnippetManager(models.Manager):
+    def get_queryset(self):
+        """Возвращает сниппеты, срок действия которых истёк."""
+        return super().get_queryset().filter(expiration__lte=timezone.now())
+
+
+class ActiveSnippetManager(models.Manager):
+    def get_queryset(self):
+        """Возвращает сниппеты, срок действия которых не истёк."""
+        return super().get_queryset().exclude(expiration__lte=timezone.now())
 
 
 class Snippet(models.Model):
@@ -37,6 +50,11 @@ class Snippet(models.Model):
         verbose_name="Срок действия", null=True, blank=True
     )
     url = models.CharField(max_length=URL_LENGTH, unique=True, editable=False)
+
+    # managers
+    objects = models.Manager()
+    inactive = InactiveSnippetManager()
+    active = ActiveSnippetManager()
 
     class Meta:
         verbose_name = "Сниппет"
