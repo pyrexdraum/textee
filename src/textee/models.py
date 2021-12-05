@@ -31,7 +31,9 @@ class Snippet(models.Model):
     URL_LENGTH = 8
     CODE_MAX_LENGTH = 65_536  # не более 256 KiB (utf-8)
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, blank=True, related_name="snippets"
+    )
     title = models.CharField(
         verbose_name="Заголовок",
         max_length=100,
