@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% if highlighted_code %}
+  {% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/syntax_highlight.css' %}">
+  {% endblock %}
+{% endif %}
+
+{% block title %}{{ snippet.title }}{% endblock %}
+
+{% block content %}
+  {{ snippet.code }}
+
+  {% if highlighted_code %}
+    {{ highlighted_code|safe }}
+  {% endif %}
+{% endblock %}
