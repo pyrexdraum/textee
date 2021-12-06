@@ -29,7 +29,7 @@ class SnippetDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         snippet = self.get_object()
-        if snippet.code != "none":
+        if snippet.syntax != "none":
             context["highlighted_code"] = highlight_code(snippet.code, snippet.syntax)
 
         return context
