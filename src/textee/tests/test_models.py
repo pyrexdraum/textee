@@ -76,3 +76,12 @@ class SnippetModelTest(TestCase):
         ]
 
         self.assertQuerysetEqual(Snippet.objects.order_by("created"), snippets)
+
+    def test_url_doesnt_change_after_update(self):
+        snippet = Snippet.objects.create(code="123")
+        url_before_update = snippet.url
+        snippet.code = "321"
+        snippet.save()
+        snippet.refresh_from_db()
+        url_after_update = snippet.url
+        self.assertEquals(url_after_update, url_before_update)
