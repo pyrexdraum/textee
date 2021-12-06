@@ -67,7 +67,7 @@ class Snippet(models.Model):
 
     def save(self, *args, **kwargs):
         self.title = self.title or self.DEFAULT_TITLE
-        self.url = self._generate_unique_url()
+        self.url = self.url or self._generate_unique_url()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
