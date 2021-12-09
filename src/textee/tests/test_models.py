@@ -7,21 +7,34 @@ from ..models import Snippet
 
 
 class SnippetModelTest(TestCase):
-    def test_empty_title_sets_default_title(self):
+    def create_3_snippets_with_different_expiration(self):
+        """
+        Создаёт 3 сниппета с разными сроками действий:
+        истёкшим, не истёкшим и без срока действия.
+        """
+        now = timezone.now()
+        past_time = now - timedelta(minutes=1)
+        future_time = now + timedelta(minutes=1)
+
+        Snippet.objects.create(title="Expired", expiration=past_time)
+        Snippet.objects.create(title="Not Expired", expiration=future_time)
+        Snippet.objects.create(title="No Expiration")  # без срока
+
+    def test_save_method_sets_default_title_if_title_is_empty(self):
         snippet = Snippet.objects.create(title="", code="1")
-        self.assertEquals(snippet.title, Snippet.DEFAULT_TITLE)
+        self.assertEqual(snippet.title, Snippet.DEFAULT_TITLE)
 
     def test_string_representation(self):
         snippet = Snippet(title="FooBar")
-        self.assertEquals(str(snippet), "Сниппет: FooBar")
+        self.assertEqual(str(snippet), "Сниппет: FooBar")
 
     def test_get_absolute_url(self):
         snippet = Snippet.objects.create()
-        self.assertEquals(snippet.get_absolute_url(), f"/{snippet.url}/")
+        self.assertEqual(snippet.get_absolute_url(), f"/{snippet.url}/")
 
     def test_generate_unique_url_returns_url_with_default_length(self):
         url = Snippet()._generate_unique_url()
-        self.assertEquals(len(url), Snippet.URL_LENGTH)
+        self.assertEqual(len(url), Snippet.URL_LENGTH)
 
     def test_save_method_sets_url(self):
         snippet = Snippet()
@@ -30,58 +43,40 @@ class SnippetModelTest(TestCase):
         snippet.save()
         self.assertTrue(snippet.url)
 
-    def test_code_content(self):
-        expected_code = "Just a code."
-        snippet = Snippet.objects.create(code=expected_code)
-        self.assertEquals(snippet.code, expected_code)
-
     def test_inactive_snippets(self):
         """
         Менеджер inactive возвращает только сниппеты с истёкшим сроком.
         """
-        inactive_snippets = [
-            Snippet.objects.create(expiration=timezone.now() - timedelta(seconds=1)),
-            Snippet.objects.create(expiration=timezone.now() - timedelta(days=1)),
-        ]
-        Snippet.objects.create()
-        Snippet.objects.create(expiration=timezone.now() + timedelta(days=1))
+        self.create_3_snippets_with_different_expiration()
+        self.assertEqual(Snippet.objects.count(), 3)
 
-        self.assertQuerysetEqual(
-            Snippet.inactive.order_by("created"), inactive_snippets
-        )
+        expired_snippet = Snippet.objects.filter(expiration__lt=timezone.now())
+        self.assertEqual(len(expired_snippet), 1)
+        self.assertQuerysetEqual(Snippet.inactive.order_by("created"), expired_snippet)
 
     def test_active_snippets(self):
         """
-        Менеджер active возвращает только сниппеты,
+        Менеджер active возвращает только те сниппеты,
         срок действия которых не истёк.
         """
-        active_snippets = [
-            Snippet.objects.create(),
-            Snippet.objects.create(expiration=timezone.now() + timedelta(days=1)),
-        ]
-        Snippet.objects.create(expiration=timezone.now() - timedelta(seconds=1)),
-        Snippet.objects.create(expiration=timezone.now() - timedelta(days=1))
+        self.create_3_snippets_with_different_expiration()
+        self.assertEqual(Snippet.objects.count(), 3)
 
-        self.assertQuerysetEqual(Snippet.active.order_by("created"), active_snippets)
-
-    def test_objects(self):
-        """
-        Менеджер objects возвращает все сниппеты.
-        """
-        snippets = [
-            Snippet.objects.create(),
-            Snippet.objects.create(expiration=timezone.now() + timedelta(days=1)),
-            Snippet.objects.create(expiration=timezone.now() - timedelta(seconds=1)),
-            Snippet.objects.create(expiration=timezone.now() - timedelta(days=1)),
-        ]
-
-        self.assertQuerysetEqual(Snippet.objects.order_by("created"), snippets)
+        not_expired_snippets = Snippet.objects.exclude(
+            expiration__lt=timezone.now()
+        ).order_by("created")
+        self.assertEqual(len(not_expired_snippets), 2)
+        self.assertQuerysetEqual(
+            Snippet.active.order_by("created"), not_expired_snippets
+        )
 
     def test_url_doesnt_change_after_update(self):
         snippet = Snippet.objects.create(code="123")
         url_before_update = snippet.url
+
         snippet.code = "321"
         snippet.save()
+
         snippet.refresh_from_db()
         url_after_update = snippet.url
-        self.assertEquals(url_after_update, url_before_update)
+        self.assertEqual(url_after_update, url_before_update)
