@@ -46,6 +46,7 @@ class Snippet(models.Model):
         choices=SYNTAX_CHOICES,
         default="none",
         max_length=100,
+        blank=True,
     )
     created = models.DateTimeField(verbose_name="Создан", auto_now_add=True)
     expiration = models.DateTimeField(
