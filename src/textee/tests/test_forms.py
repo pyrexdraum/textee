@@ -1,18 +1,16 @@
-from datetime import timedelta
+from datetime import datetime
 
 from django.test import SimpleTestCase
-from django.utils import timezone
 
 from ..forms import SnippetForm
 
 
 class SnippetFormTest(SimpleTestCase):
-
     def test_form_with_valid_data(self):
         """
-        Форма требует заполнить только поле code и syntax.
+        Форма требует заполнить только поле code.
         """
-        form = SnippetForm({"code": "Just a code.", "syntax": "none"})
+        form = SnippetForm({"code": "Just a code."})
         self.assertIs(form.is_valid(), True)
 
     def test_expiration_field_with_invalid_choice(self):
@@ -20,19 +18,17 @@ class SnippetFormTest(SimpleTestCase):
         self.assertTrue(form["expiration"].errors)
 
     def test_expiration_field_with_valid_choice(self):
-        for choice in SnippetForm.Timer.choices:
+        for choice in SnippetForm.EXPIRATION_CHOICES:
             form = SnippetForm({"expiration": choice[0]})
             self.assertFalse(form["expiration"].errors)
 
-    def test_get_timer(self):
+    def test_clean_expiration_returns_datetime_for_valid_value(self):
         """
-        Timer.get_timer() возвращает соответствующий объект datetime.
+        clean_expiration() возвращает объект datetime для значений
+        из SnippetForm.EXPIRATION_IN_TIMEDELTA.
         """
-        expected_time = timedelta(minutes=10)
-        inaccuracy = timedelta(seconds=2)
-
-        time_code = SnippetForm.Timer.TEN_MINUTES
-        output_time = SnippetForm.Timer.get_timer(time_code) - timezone.now()
-
-        result = (expected_time - inaccuracy) <= output_time <= expected_time
-        self.assertTrue(result)
+        for time_code in SnippetForm.EXPIRATION_IN_TIMEDELTA:
+            form = SnippetForm({"expiration": time_code})
+            form.is_valid()
+            expiration = form.cleaned_data.get("expiration", None)
+            self.assertIsInstance(expiration, datetime)
