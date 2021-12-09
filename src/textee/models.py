@@ -1,7 +1,7 @@
 from pygments.lexers import get_all_lexers
 
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
@@ -9,7 +9,7 @@ from .utils import make_random_string
 
 User = get_user_model()
 LEXERS = [item for item in get_all_lexers() if item[1]]
-SYNTAX_CHOICES = [("none", "Нет")] + sorted([(item[1][0], item[0]) for item in LEXERS])
+SYNTAX_CHOICES = [("", "Нет")] + sorted([(item[1][0], item[0]) for item in LEXERS])
 
 
 class InactiveSnippetManager(models.Manager):
@@ -44,7 +44,6 @@ class Snippet(models.Model):
     syntax = models.CharField(
         verbose_name="Подсветка синтаксиса",
         choices=SYNTAX_CHOICES,
-        default="none",
         max_length=100,
         blank=True,
     )
@@ -63,18 +62,18 @@ class Snippet(models.Model):
         verbose_name = "Сниппет"
         verbose_name_plural = "Сниппеты"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Сниппет: {self.title}"
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         self.title = self.title or self.DEFAULT_TITLE
         self.url = self.url or self._generate_unique_url()
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse("snippet_detail", kwargs={"url": self.url})
 
-    def _generate_unique_url(self):
+    def _generate_unique_url(self) -> str:
         url = make_random_string(self.URL_LENGTH)
         if Snippet.objects.filter(url=url).exists():
             return self._generate_unique_url()
