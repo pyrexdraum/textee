@@ -14,6 +14,8 @@ pygments = "==2.10.0"
 
 [dev-packages]
 black = "*"
+flake8 = "*"
+isort = "*"
 
 [requires]
 python_version = "3.9"
