@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
-from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.test import TestCase
 
 from ..forms import SnippetForm
 from ..models import Snippet
@@ -44,3 +44,8 @@ class SnippetCreateViewTest(TestCase):
         response = self.client.post("/", data={"code": "redirected"})
         snippet = Snippet.objects.first()
         self.assertRedirects(response, f"/{snippet.url}/")
+
+    def test_for_invalid_input_doesnt_save(self):
+        response = self.client.post("/")
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(Snippet.objects.count(), 0)
