@@ -16,6 +16,7 @@ pygments = "==2.10.0"
 black = "*"
 flake8 = "*"
 isort = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.9"
