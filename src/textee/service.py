@@ -4,7 +4,7 @@ from pygments.formatters import HtmlFormatter
 
 
 def highlight_code(code: str, syntax: str) -> str:
-    """Возвращает code обернутый в html-теги для определенного syntax."""
+    """Возвращает `подсвеченный` html-тегами code."""
     lexer = get_lexer_by_name(syntax, encoding='utf-8', stripall=True)
-    formatter = HtmlFormatter()
+    formatter = HtmlFormatter(linenos='inline')
     return highlight(code, lexer, formatter)
