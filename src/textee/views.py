@@ -16,7 +16,7 @@ class SnippetCreateView(CreateView):
         is_user = self.request.user.is_authenticated
         snippet.owner = self.request.user if is_user else None
         snippet.save()
-        return redirect(snippet.get_absolute_url())
+        return redirect(snippet)
 
 
 class SnippetDetailView(DetailView):
@@ -29,7 +29,6 @@ class SnippetDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         snippet = self.get_object()
-        if snippet.syntax != "none":
+        if snippet.syntax:
             context["highlighted_code"] = highlight_code(snippet.code, snippet.syntax)
-
         return context
