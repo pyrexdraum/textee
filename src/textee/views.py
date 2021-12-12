@@ -12,11 +12,9 @@ class SnippetCreateView(CreateView):
     template_name = "textee/index.html"
 
     def form_valid(self, form):
-        snippet = form.save(commit=False)
-        is_user = self.request.user.is_authenticated
-        snippet.owner = self.request.user if is_user else None
-        snippet.save()
-        return redirect(snippet)
+        if self.request.user.is_authenticated:
+            form.instance.owner = self.request.user
+        return super().form_valid(form)
 
 
 class SnippetDetailView(DetailView):
