@@ -61,6 +61,7 @@ class Snippet(models.Model):
     class Meta:
         verbose_name = "Сниппет"
         verbose_name_plural = "Сниппеты"
+        ordering = ("-created",)
 
     def __str__(self) -> str:
         return f"Сниппет: {self.title}"
