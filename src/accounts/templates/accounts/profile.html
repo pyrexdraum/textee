@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+  <h1 class="fs-4 text-break">
+    Профиль пользователя <span class="text-primary">{{ user.username }}</span>
+  </h1>
+
+  <p title="Зарегистрирован">
+    <i class="bi bi-calendar-check fs-5"></i> {{ user.date_joined|timesince }} назад
+  </p>
+
+  {% if page_obj %}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Заголовок</th>
+          <th scope="col">Создан</th>
+          <th scope="col">Срок действия</th>
+          <th scope="col">Синтаксис</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for snippet in page_obj %}
+          <tr>
+            <th>
+              <a href="{{ snippet.get_absolute_url }}">{{ snippet.title|truncatechars:30 }}</a>
+            </th>
+            <td>{{ snippet.created|date:"SHORT_DATE_FORMAT" }}</td>
+            <td>{{ snippet.expiration|timeuntil|default:"Не удалять" }}</td>
+            <td>{{ snippet.syntax|default:"Простой текст" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if is_paginated %}
+      <nav>
+        <ul class="pagination">
+          {% with prev=page_obj.has_previous %}
+            <li class="page-item {% if not prev %}disabled{% endif %}">
+              <a class="page-link"
+                 {% if prev %}href="?page={{ page_obj.previous_page_number }}"{% endif %}>
+                Предыдущая
+              </a>
+            </li>
+          {% endwith %}
+          <li class="page-item active"><a class="page-link">
+            Страница {{ page_obj.number }} из {{ paginator.num_pages }}
+          </a></li>
+          {% with next=page_obj.has_next %}
+            <li class="page-item {% if not next %}disabled{% endif %}">
+              <a class="page-link"
+                 {% if next %}href="?page={{ page_obj.next_page_number }}"{% endif %}>
+                Следующая
+              </a>
+            </li>
+          {% endwith %}
+        </ul>
+      </nav>
+    {% endif %}
+  {% else %}
+    <p>У пользователя пока еще нет снипеттов.</p>
+  {% endif %}
+{% endblock %}
