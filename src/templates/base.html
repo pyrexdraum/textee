@@ -35,7 +35,7 @@
                 {{ request.user.username }}
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="{% url 'profile' request.user.username %}">Профиль</a></li>
+                <li><a class="dropdown-item" href="{{ request.user.get_absolute_url }}">Профиль</a></li>
                 <li><a class="dropdown-item" href="{% url 'account_email' %}">Настроить e-mail</a></li>
                 <li><a class="dropdown-item" href="{% url 'account_change_password' %}">Сменить пароль</a></li>
                 <li>
