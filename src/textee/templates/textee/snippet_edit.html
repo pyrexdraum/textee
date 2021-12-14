@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Редактировать сниппет{% endblock %}
+
+{% block content %}
+  <form action="{% url 'snippet_edit' object.url %}" method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button class="btn btn-warning" type="submit">
+      <i class="bi bi-pencil-square"></i> Сохранить
+    </button>
+  </form>
+{% endblock %}
