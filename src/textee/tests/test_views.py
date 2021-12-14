@@ -104,7 +104,7 @@ class SnippetDeleteViewTest(TestCase):
         self.client.force_login(not_owner)
 
         response = self.client.post(self.snippet_delete_url)
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
         self.assertEqual(Snippet.objects.count(), 1)
 
     def test_redirects_to_profile_after_delete(self):
