@@ -23,7 +23,6 @@ class SnippetDetailView(DetailView):
     slug_field = "url"
     slug_url_kwarg = "url"
     context_object_name = "snippet"
-    template_name = "textee/detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

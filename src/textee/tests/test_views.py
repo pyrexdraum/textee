@@ -59,9 +59,9 @@ class SnippetDetailViewTest(TestCase):
         cls.snippet = Snippet.objects.create(code="1")
         cls.snippet_with_syntax = Snippet.objects.create(code="2", syntax="python")
 
-    def test_uses_detail_template(self):
+    def test_uses_template(self):
         response = self.client.get(self.snippet.get_absolute_url())
-        self.assertTemplateUsed(response, "textee/detail.html")
+        self.assertTemplateUsed(response, "textee/snippet_detail.html")
 
     def test_highlighted_code_in_context_if_syntax_is_not_empty(self):
         snippet = self.snippet_with_syntax
