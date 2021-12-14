@@ -1,8 +1,10 @@
-from django.shortcuts import redirect
-from django.views.generic import CreateView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404
+from django.views.generic import CreateView, DetailView, View
+from django.views.generic.edit import DeletionMixin
 
-from .models import Snippet
 from .forms import SnippetForm
+from .models import Snippet
 from .service import highlight_code
 
 
@@ -30,3 +32,13 @@ class SnippetDetailView(DetailView):
         if snippet.syntax:
             context["highlighted_code"] = highlight_code(snippet.code, snippet.syntax)
         return context
+
+
+class SnippetDeleteView(LoginRequiredMixin, DeletionMixin, View):
+    def get_object(self):
+        model_manager = self.request.user.snippets
+        url = self.kwargs["url"]
+        return get_object_or_404(model_manager, url=url)
+
+    def get_success_url(self):
+        return self.request.user.get_absolute_url()
