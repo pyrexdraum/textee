@@ -1,9 +1,8 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, DetailView, View
 from django.views.generic.edit import DeletionMixin
 
 from .forms import SnippetForm
+from .mixins import OwnerSnippetRequiredMixin
 from .models import Snippet
 from .service import highlight_code
 
@@ -34,11 +33,6 @@ class SnippetDetailView(DetailView):
         return context
 
 
-class SnippetDeleteView(LoginRequiredMixin, DeletionMixin, View):
-    def get_object(self):
-        model_manager = self.request.user.snippets
-        url = self.kwargs["url"]
-        return get_object_or_404(model_manager, url=url)
-
+class SnippetDeleteView(OwnerSnippetRequiredMixin, DeletionMixin, View):
     def get_success_url(self):
         return self.request.user.get_absolute_url()
