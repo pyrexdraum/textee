@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.urls import reverse
 
 from ..forms import SnippetForm
 from ..models import Snippet
@@ -78,3 +79,35 @@ class SnippetDetailViewTest(TestCase):
     def test_snippet_in_context(self):
         response = self.client.get(self.snippet.get_absolute_url())
         self.assertEqual(response.context["snippet"], self.snippet)
+
+
+class SnippetDeleteViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.snippet_owner = User.objects.create(username="testuser")
+        snippet = Snippet.objects.create(owner=cls.snippet_owner, code="321")
+        cls.snippet_delete_url = reverse("snippet_delete", kwargs={"url": snippet.url})
+
+    def test_not_authenticated_user_cannot_delete_snippet(self):
+        response = self.client.post(self.snippet_delete_url)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(Snippet.objects.count(), 1)
+
+    def test_owner_of_snippet_can_delete_it(self):
+        self.client.force_login(self.snippet_owner)
+        response = self.client.post(self.snippet_delete_url)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(Snippet.objects.count(), 0)
+
+    def test_only_owner_can_delete_his_snippet(self):
+        not_owner = User.objects.create(username="not_owner")
+        self.client.force_login(not_owner)
+
+        response = self.client.post(self.snippet_delete_url)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(Snippet.objects.count(), 1)
+
+    def test_redirects_to_profile_after_delete(self):
+        self.client.force_login(self.snippet_owner)
+        response = self.client.post(self.snippet_delete_url)
+        self.assertRedirects(response, self.snippet_owner.get_absolute_url())
