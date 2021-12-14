@@ -1,4 +1,4 @@
-from django.views.generic import CreateView, DetailView, View
+from django.views.generic import CreateView, DetailView, UpdateView, View
 from django.views.generic.edit import DeletionMixin
 
 from .forms import SnippetForm
@@ -36,3 +36,8 @@ class SnippetDetailView(DetailView):
 class SnippetDeleteView(OwnerSnippetRequiredMixin, DeletionMixin, View):
     def get_success_url(self):
         return self.request.user.get_absolute_url()
+
+
+class SnippetUpdateView(OwnerSnippetRequiredMixin, UpdateView):
+    form_class = SnippetForm
+    template_name = "textee/snippet_edit.html"
