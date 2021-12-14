@@ -12,25 +12,35 @@
 {% block content %}
   <h1 class="fs-3 text-break">{{ snippet.title }}</h1>
 
-  <p class="text-muted">
-    {% if snippet.owner %}
-      <span class="me-2" title="Автор текста">
-        <i class="bi bi-person fs-5"></i>
-        <a href="{{ snippet.owner.get_absolute_url }}">{{ snippet.owner.username }}</a>
-      </span>
-    {% endif %}
-    <span class="me-2" title="Создан">
-      <i class="bi bi-calendar fs-5"></i> {{ snippet.created|date:'j M, Y' }}
-    </span>
-    <span title="Время, через которое этот сниппет будет удалён">
-      <i class="bi bi-stopwatch fs-5"></i>
-      {% if snippet.expiration %}
-        {{ snippet.expiration|timeuntil }}
-      {% else %}
-        Никогда
-      {% endif %}
-    </span>
-  </p>
+  <div class="row">
+    <div class="col">
+      <p class="text-muted">
+        {% if snippet.owner %}
+          <span class="me-2" title="Автор текста">
+            <i class="bi bi-person fs-5"></i>
+            <a href="{{ snippet.owner.get_absolute_url }}">{{ snippet.owner.username }}</a>
+          </span>
+        {% endif %}
+        <span class="me-2" title="Создан">
+          <i class="bi bi-calendar fs-5"></i> {{ snippet.created|date:'j M, Y' }}
+        </span>
+        <span title="Время, через которое этот сниппет будет удалён">
+          <i class="bi bi-stopwatch fs-5"></i>
+          {% if snippet.expiration %}
+            {{ snippet.expiration|timeuntil }}
+          {% else %}
+            Никогда
+          {% endif %}
+        </span>
+      </p>
+    </div>
+    <div class="col-auto">
+      <form action="{% url 'snippet_delete' snippet.url %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
+      </form>
+    </div>
+  </div>
 
   {% if highlighted_code %}
     <div class="card mb-4">
