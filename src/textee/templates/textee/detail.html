@@ -34,6 +34,12 @@
         </span>
       </p>
     </div>
+    <div class="col-auto pe-0">
+      <a class="btn btn-outline-warning btn-sm"
+         href="{% url 'snippet_edit' snippet.url %}" role="button">
+        Редактировать
+      </a>
+    </div>
     <div class="col-auto">
       <form action="{% url 'snippet_delete' snippet.url %}" method="post">
         {% csrf_token %}
