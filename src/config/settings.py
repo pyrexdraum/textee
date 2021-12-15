@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "crispy_forms",
     "crispy_bootstrap5",
+    "django_celery_beat",
 
     # Local
     "textee.apps.TexteeConfig",
@@ -165,3 +166,12 @@ ACCOUNT_USERNAME_BLACKLIST = ["admin", "administrator", "user", "moderator"]
 ACCOUNT_USERNAME_MIN_LENGTH = 3
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 ACCOUNT_MAX_EMAIL_ADDRESSES = 2
+
+# Celery settings
+CELERY_BROKER_URL = "amqp://guest:guest@localhost"
+CELERY_BEAT_SCHEDULE = {
+    "delete-expired-snippets-every-10-min": {
+        "task": "textee.tasks.delete_expired_snippets",
+        "schedule": 60 * 10,
+    },
+}
