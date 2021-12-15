@@ -149,6 +149,9 @@ SITE_ID = 1
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
+# Setting up sending emails
+# https://docs.djangoproject.com/en/3.2/topics/email/
+
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 LOGIN_REDIRECT_URL = "index"
@@ -160,7 +163,7 @@ LOGIN_URL = "account_login"
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_USERNAME_BLACKLIST = ["admin", "administrator", "user", "moderator"]
 ACCOUNT_USERNAME_MIN_LENGTH = 3
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
