@@ -1,6 +1,9 @@
 from datetime import timedelta
 from typing import Optional
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Div, Field, Layout, Submit
+
 from django import forms
 from django.utils import timezone
 
@@ -8,6 +11,15 @@ from .models import Snippet
 
 
 class SnippetForm(forms.ModelForm):
+    CODE_PLACEHOLDER = """
+        Textee - это веб-сайт, на котором вы можете хранить любой текст
+        онлайн для удобства обмена. Веб-сайт в основном используется 
+        программистами для хранения фрагментов исходного кода или 
+        информации о конфигурации, но любой желающий может вставить 
+        любой тип текста, выбрать срок действия и синтаксис.
+        
+        Начните печатать или вставьте текст...
+        """
     NO_TIME = "N"
     TEN_MINUTES = "10"
     ONE_HOUR = "1H"
@@ -46,6 +58,20 @@ class SnippetForm(forms.ModelForm):
         model = Snippet
         fields = ("title", "code", "syntax", "expiration")
         widgets = {"code": forms.Textarea()}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_action = "index"
+        self.helper.form_class = "row g-3"
+        self.helper.layout = Layout(
+            Div(Field("code", placeholder=self.CODE_PLACEHOLDER), css_class="col-12"),
+            Div("title", css_class="col-5"),
+            Div("syntax", css_class="col-5"),
+            Div("expiration", css_class="col-2"),
+            Div(Submit("create", "Создать", css_class="btn btn-success")),
+        )
 
     def clean_expiration(self) -> Optional[timezone.datetime]:
         time_code = self.cleaned_data["expiration"]
