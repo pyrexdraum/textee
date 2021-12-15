@@ -2,7 +2,6 @@ from pathlib import Path
 
 from decouple import config
 
-from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -152,9 +151,9 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-LOGIN_REDIRECT_URL = reverse_lazy("index")
-LOGOUT_REDIRECT_URL = LOGIN_REDIRECT_URL
-LOGIN_URL = reverse_lazy("account_login")
+LOGIN_REDIRECT_URL = "index"
+LOGOUT_REDIRECT_URL = "index"
+LOGIN_URL = "account_login"
 
 # django-allauth
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
