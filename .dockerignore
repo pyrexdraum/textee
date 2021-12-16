@@ -1,3 +1,7 @@
 .idea/
 .gitignore
 .git/
+.flake8
+README.md
+LICENSE
+nginx/

@@ -1,7 +1,6 @@
 from pathlib import Path
 
-from decouple import config
-
+from decouple import Csv, config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,9 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", default="127.0.0.1", cast=Csv())
 
 
 # Application definition
@@ -79,11 +78,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": config("POSTGRES_DB", default="postgres"),
-        "HOST": config("DJANGO_DB_HOST", default="postgres"),
-        "USER": config("POSTGRES_USER", default="postgres"),
+        "NAME": "postgres",
+        "HOST": "postgres",
+        "USER": "postgres",
         "PASSWORD": config("POSTGRES_PASSWORD"),
-        "PORT": config("DJANGO_DB_PORT", default=5432),
+        "PORT": 5432,
     }
 }
 
@@ -170,10 +169,11 @@ ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 ACCOUNT_MAX_EMAIL_ADDRESSES = 2
 
 # Celery settings
-CELERY_BROKER_URL = "amqp://guest:guest@localhost"
+# https://docs.celeryproject.org/en/master/userguide/configuration.html
+CELERY_BROKER_URL = "amqp://guest:guest@rabbitmq"
 CELERY_BEAT_SCHEDULE = {
     "delete-expired-snippets-every-10-min": {
         "task": "textee.tasks.delete_expired_snippets",
-        "schedule": 60 * 10,
+        "schedule": 60 * 10,  # 10 minutes
     },
 }

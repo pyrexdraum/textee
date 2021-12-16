@@ -8,18 +8,41 @@ services:
             - postgres_data:/var/lib/postgresql/data/
         env_file:
             - "src/.env"
+
     django:
         build: .
-        command: python /code/src/manage.py runserver 0.0.0.0:8000
+        entrypoint: ./entrypoint.sh
         restart: always
         volumes:
-            - .:/code
+            - django_staticfiles:/usr/src/app/staticfiles/
         env_file:
-            -   "src/.env"
-        ports:
-            - "8000:8000"
+            - "src/.env"
         depends_on:
             - postgres
+            - rabbitmq
+
+    nginx:
+        image: nginx:alpine
+        restart: always
+        volumes:
+            - django_staticfiles:/home/app/web/staticfiles/
+            - ./nginx:/etc/nginx/conf.d
+        ports:
+            - "80:80"
+        depends_on:
+            - django
+
+    rabbitmq:
+        image: rabbitmq:3.9.10-alpine
+        restart: always
+
+    celery:
+        build: .
+        command: celery -A config worker -B -l INFO
+        restart: always
+        depends_on:
+            - rabbitmq
 
 volumes:
     postgres_data:
+    django_staticfiles:
